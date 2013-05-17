@@ -708,7 +708,7 @@ $(document).ready(function() {
         // as to insert the new POI in the database
         $.ajax({
             type: "POST",
-            url: "insert.php",
+            url: insertNewPoiScript,
             cache: false,
             data: formData,
             success: onSuccess,
