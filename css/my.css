@@ -717,3 +717,17 @@ header.ui-header, footer.ui-footer {
 
 /*red asterisk for required form fields*/
 .asterisk {color:red}
+
+
+.votePanel p {margin-top:0; text-align: center; font-weight: bold;}
+#voteUpButton, #voteDownButton {cursor: pointer;}
+#voteUpButton { padding-right: 3px;}
+#voteDownButton {  padding-right:3px;}
+.votePanel img {width: auto !important; vertical-align: middle;}
+.votePanel {padding:10px 20px; display: inline-block; border-radius: 6px; border:1px solid #ccc;}
+.voteScoreWrapper {text-align:center;display: inline-block; min-width:60px; padding:5px; border:1px solid #ccc;  border-radius:6px;}
+#voteDownScoreWrapper {margin-left:15px;}
+.bubbleUpVoteWrapper {border: 1px solid #ccc; background-color:#fff; padding:5px; display:inline-block; border-radius:20px;}
+.bubbleDownVoteWrapper {border: 1px solid #ccc; background-color:#fff; padding:5px; display:inline-block; border-radius:20px;}
+.bubbleDownVoteWrapper img{ width:20px; margin-right:3px;}
+.bubbleUpVoteWrapper img{ width:20px; margin-right:3px;}

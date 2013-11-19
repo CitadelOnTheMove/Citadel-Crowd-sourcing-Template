@@ -2,6 +2,7 @@
 var newMarker = null;
 var point = null;
 var geocoder;
+var currentPoiId;
 
 /****************** Functions *****************************/
 
@@ -161,12 +162,23 @@ function getMarkerClass(category) {
         }
     }
 }
+function refreshBubblePoiVotes(poiId)
+{
+    $.ajax({
+        type: "GET",
+        url: getPoiVotesScript + "?poiId=" + poiId,
+        cache: false,
+        success: onRefreshBubblePoiVotesSuccess,
+        error: onRefreshBubblePoiVotesFailure
+    });
 
+}
 /* Sets the content of the infoBubble for the given 
  * poi
  */
 function setInfoWindowPoi(poi)
 {
+    refreshBubblePoiVotes(poi.id);
     var category = "";
 
     /* Get the Event specific attributes of the POI */
@@ -182,17 +194,25 @@ function setInfoWindowPoi(poi)
             poi.title +
             "</div>" +
             "<div class='address'>" + poi.location.address.value +
-            "</div>\n" + category +
+            "</div>\n" + category + "<span class='bubbleUpVoteWrapper'><img src='images/like-32.png'/><span id='bubbleUpVotes'></span></span><span  class='bubbleDownVoteWrapper'><img src='images/dislike-32.png'/><span id='bubbleDownVotes'></span></span>" +
             "</a></div><div id='bubbleClose'><a href='' onclick='return overrideBubbleCloseClick();'><img src='images/close.png' width='25' height='25' alt='close' /></a></div>";
 
     return contentTemplate;
 }
 
+function resetVoteLoader()
+{
+    $('#downVoteScore').html("<img  src='images/loader.GIF'  />");
+    $('#upVoteScore').html("<img  src='images/loader.GIF'  />");
+    //$('#voteScore').html("<img  src='images/loader.GIF'  />");
+}
 /* Sets the content of the details page for the given 
  * poi
  */
 function setDetailPagePoi(poi)
 {
+    resetVoteLoader();
+    currentPoiId = poi.id;
     /* Get the Event specific attributes of the POI */
     var image = getCitadel_attr(poi, "#Citadel_image").text;
     var telephone = getCitadel_attr(poi, "#Citadel_telephone").text;
@@ -250,9 +270,12 @@ function setDetailPagePoi(poi)
         contentTemplate += "<li><span>" + otherAttributes[i].term + "</span>" + otherAttributes[i].text + "</li>";
     }
 
+    // Voting system ui   
+    $('#poiIdForVote').val(currentPoiId);
+
     contentTemplate += "</ul>" +
             "</div>";
-
+    refreshPoiVotes(currentPoiId);
     return contentTemplate;
 }
 
@@ -717,7 +740,74 @@ $(document).ready(function() {
         return false;
     });
 
-    
+
+    $("#voteUpButton").bind("click", function() {
+        // Checking if user has voted before
+        if (typeof(Storage) !== "undefined") {
+            if (!localStorage.getItem('votedPoi' + currentPoiId))
+            {
+                resetVoteLoader();
+                $("#poiVote").val('1');
+                var formData = $("#insertVote").serialize();
+                // Post the form to the corresponding php script so
+                // as to insert the new Vote in the database
+                $.ajax({
+                    type: "POST",
+                    url: insertNewVoteScript,
+                    cache: false,
+                    data: formData,
+                    success: onVoteSuccess,
+                    error: onVoteFailure
+                });
+                return false;
+            }
+            else
+            {
+                alert('You have already voted!');
+            }
+        }
+        else
+        {
+            alert("You can not vote because your browser does not support local storage. Please update your browser.");
+        }
+    });
+
+
+    /*Submit form handler*/
+    $("#voteDownButton").bind("click", function() {
+        if (typeof(Storage) !== "undefined") {
+
+
+            if (!localStorage.getItem('votedPoi' + currentPoiId))
+            {
+                resetVoteLoader();
+                $("#poiVote").val('0');
+
+                var formData = $("#insertVote").serialize();
+                // Post the form to the corresponding php script so
+                // as to insert the new Vote in the database
+                $.ajax({
+                    type: "POST",
+                    url: insertNewVoteScript,
+                    cache: false,
+                    data: formData,
+                    success: onVoteSuccess,
+                    error: onVoteFailure
+                });
+                return false;
+            }
+            else
+            {
+                alert('You have already voted!');
+            }
+        }
+        else
+        {
+            alert("You can not vote because your browser does not support local storage. Please update your browser.");
+        }
+    });
+
+
     /* Triggered when user deletes previously 
      * added new marker 
      */
@@ -728,6 +818,17 @@ $(document).ready(function() {
 
 }); // end $(document).ready
 
+function refreshPoiVotes(poiId)
+{
+    $.ajax({
+        type: "GET",
+        url: getPoiVotesScript + "?poiId=" + poiId,
+        cache: false,
+        success: onRefreshPoiVotesSuccess,
+        error: onRefreshPoiVotesFailure
+    });
+
+}
 /*Called after a successful poi insertion*/
 function onSuccess(data, status)
 {
@@ -735,10 +836,57 @@ function onSuccess(data, status)
     deleteMarkerNCloseDialog();
     globalInit();
 }
+
+function onRefreshBubblePoiVotesSuccess(data, status)
+{
+    var array = JSON.parse(data);
+    $('#bubbleDownVotes').html(array[1]);
+    $('#bubbleUpVotes').html(array[0]);
+    
+      $('#bubbleDownVotes').html(array[1]);
+     $('#bubbleUpVotes').html(array[0]);
+
+}
+// Called when failing to retrieve the votes of a poi
+function onRefreshBubblePoiVotesFailure(data, status)
+{
+     $('#downVoteScore').html('error');
+    $('#upVoteScore').html('error');
+}
+
+
+function onRefreshPoiVotesSuccess(data, status)
+{
+    var array = JSON.parse(data);
+    $('#downVoteScore').html(array[1]);
+    $('#upVoteScore').html(array[0]);
+}
+// Called when failing to retrieve the votes of a poi
+function onRefreshPoiVotesFailure(data, status)
+{
+     $('#downVoteScore').html('error');
+    $('#upVoteScore').html('error');
+}
+
+/*Called after a successful poi insertion*/
+function onVoteSuccess(data, status)
+{
+    console.log("Vote success");
+    alert('Vote submitted!');
+    $('#insertVote')[0].reset();
+    localStorage.setItem('votedPoi' + currentPoiId, "1");
+    refreshPoiVotes(currentPoiId);
+}
 /*Called after a unsuccessful poi insertion*/
 function onError(data, status)
 {
     // handle an error
+}
+
+function onVoteFailure(data, status)
+{
+    console.log('vote failed', data, status);
+    alert('There was a problem submitting your vote, please try again later.');
 }
 
 /* Delete the new marker and close dialog window */
