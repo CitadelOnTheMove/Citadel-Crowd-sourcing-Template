@@ -1,9 +1,9 @@
-/*****************Global variables********************/
+/*****************Global variables v4********************/
 var newMarker = null;
 var point = null;
 var geocoder;
 var currentPoiId;
-
+var currentPoi;
 /****************** Functions *****************************/
 
 /* Initialization function.
@@ -51,7 +51,8 @@ function getPoisFromDataset(resultCallback)
 
 /* Initialises a google map using map api v3 */
 function initializeMap(Lat, Lon) {
-
+         // Instantiate an info window to hold step text.
+    stepDisplay = new google.maps.InfoWindow();
     //define the center location 
     var myLatlng = new google.maps.LatLng(Lat, Lon);
     //define the map options
@@ -64,6 +65,13 @@ function initializeMap(Lat, Lon) {
     map = new google.maps.Map(document.getElementById("map_canvas"),
             mapOptions);
     addMarkers();
+    
+
+     var rendererOptions = {
+        map: map
+    }
+     directionsService = new google.maps.DirectionsService();
+    directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
 }
 
 /* Adds all the markers on the global map object */
@@ -84,6 +92,8 @@ function addMarkers()
     oms.addListener('click', function(marker) {
         iw.setContent(marker.desc);
         iw.open(map, marker);
+                currentTransit.lat = marker.position.lat();
+        currentTransit.lon = marker.position.lng();
     });
 
     /* We initialize the infobubble styling */
@@ -114,7 +124,8 @@ function addMarkers()
             var current_marker = new google.maps.Marker({
                 position: current_markerpos,
                 map: map,
-                icon: marker_image
+                icon: marker_image,
+                        animation: google.maps.Animation.DROP
             });
 
             markersArray.push(current_marker);
@@ -178,6 +189,7 @@ function refreshBubblePoiVotes(poiId)
  */
 function setInfoWindowPoi(poi)
 {
+    currentPoi = poi;
     refreshBubblePoiVotes(poi.id);
     var category = "";
 
@@ -191,11 +203,13 @@ function setInfoWindowPoi(poi)
     var contentTemplate =
             "<div id='poiBubble'><a href='#page3' onclick='overrideDetailClick(\"" + poi.id + "\"); return false;'>" +
             "<div class='title'>" +
-            poi.title +
+            poi.title + 
             "</div>" +
             "<div class='address'>" + poi.location.address.value +
-            "</div>\n" + category + "<span class='bubbleUpVoteWrapper'><img src='images/like-32.png'/><span id='bubbleUpVotes'></span></span><span  class='bubbleDownVoteWrapper'><img src='images/dislike-32.png'/><span id='bubbleDownVotes'></span></span>" +
-            "</a></div><div id='bubbleClose'><a href='' onclick='return overrideBubbleCloseClick();'><img src='images/close.png' width='25' height='25' alt='close' /></a></div>";
+            "</div>" + category + "</a>" +
+            "<a data-rel='popup' onclick='showTransitOptions()'  data-transition='slideup' class='ui-btn ui-corner-all ui-shadow ui-btn-inline ui-icon-navigation ui-btn-icon-left ui-btn-a transitPopup'>Take me there</a>" +
+             "<span class='bubbleUpVoteWrapper'><img src='images/like-32.png'/><span id='bubbleUpVotes'></span></span><span  class='bubbleDownVoteWrapper'><img src='images/dislike-32.png'/><span id='bubbleDownVotes'></span></span>" +
+            "</div><div id='bubbleClose'><a href='' onclick='return overrideBubbleCloseClick();'><img src='images/close.png' width='25' height='25' alt='close' /></a></div></div>";
 
     return contentTemplate;
 }
@@ -213,6 +227,7 @@ function setDetailPagePoi(poi)
 {
     resetVoteLoader();
     currentPoiId = poi.id;
+    currentPoi = poi;
     /* Get the Event specific attributes of the POI */
     var image = getCitadel_attr(poi, "#Citadel_image").text;
     var telephone = getCitadel_attr(poi, "#Citadel_telephone").text;
@@ -286,7 +301,7 @@ function setAddNewMarkerCategory()
 {
     var categorySelect = "<option value=''></option>";
     //var categorySelect = "";
-    
+
     $.each(filters, function(k, v) {
         categorySelect += "<option value='" + v.name + "'>" + v.name + "</option>";
     });
@@ -312,7 +327,7 @@ function setListPagePois()
             var imageClass = (isFavourite ? "star" : getMarkerClass(poi.category[0]));
             var className = (isFavourite ? " class='favourite'" : " class='nonfavourite'");
 
-            contentTemplate +=
+          /*  contentTemplate +=
                     "<li" + className + ">" +
                     "<a href='' onclick='overrideDetailClick(\"" + poi.id + "\"); return false;'>" +
                     "<span class='" + imageClass + " icon'></span>" +
@@ -320,7 +335,20 @@ function setListPagePois()
                     "<h4>" + poi.description + "</h4>" +
                     category +
                     "</a>" +
-                    "</li>";
+                    "</li>";*/
+            
+            
+              contentTemplate +=
+                "<li" + className + ">" +
+                "<a href='' onclick='overrideDetailClick(\"" + poi.id + "\"); return false;'>" +
+                "<img src='images/" + imageClass + ".png'  />" +
+//                "<span class='" + imageClass + " icon'></span>" +
+                "<span>" + poi.title + "</span>" +
+//                "<h4>" + poi.description + "</h4>" +
+                category +
+                        
+                "</a>" +
+                "</li>";
         }
     });
     return contentTemplate;
@@ -490,7 +518,8 @@ $(document).ready(function() {
 
                     var currentmarker = new google.maps.Marker({
                         position: currentmarkerpos,
-                        map: map
+                        map: map,
+                        animation: google.maps.Animation.DROP
                     });
                 }
             });
@@ -526,7 +555,7 @@ $(document).ready(function() {
 
     /* Checks for the active page and performs the 
      * relevant actions
-     */
+     
     $('.page').bind("pageshow", function(event, data) {
         if ($(this).attr('id') == 'page1') {
             refreshMap();
@@ -536,6 +565,27 @@ $(document).ready(function() {
             $('.navbar > ul > li > a').removeClass('ui-btn-active');
             $('.pois-list').addClass('ui-btn-active');
             refreshListPageView();      //this was comment!!!??
+            pageId = 0;
+        }
+        if ($(this).attr('id') == 'page3') {
+            $('.navbar > ul > li > a').removeClass('ui-btn-active');
+        }
+    });*/
+    
+     /* Checks for the active page and performs the 
+     * relevant actions
+     */
+    $('.page').bind("pageshow", function(event, data) {
+        if ($(this).attr('id') == 'page1') {
+            $('.navbar > ul > li > a').removeClass('ui-btn-active');
+            $('.pois-showall').addClass('ui-btn-active');
+            refreshMap();
+            pageId = 0;
+        }
+        if ($(this).attr('id') == 'page2') {
+            $('.navbar > ul > li > a').removeClass('ui-btn-active');
+            $('.pois-list').addClass('ui-btn-active');
+//            refreshListPageView();
             pageId = 0;
         }
         if ($(this).attr('id') == 'page3') {
@@ -632,7 +682,8 @@ $(document).ready(function() {
                 draggable: true,
                 position: current_latlon,
                 icon: newMarkerIcon,
-                title: 'My new POI'
+                title: 'My new POI',
+                        animation: google.maps.Animation.DROP
             });
 
             var contentTemplate =
@@ -722,11 +773,11 @@ $(document).ready(function() {
         });
 
     }
-   
-   /*Submit form handler*/
+
+    /*Submit form handler*/
     $("#insertForm").bind("submit", function() {
         var formData = $("#insertForm").serialize();
-        
+
         // Post the form to the corresponding php script so
         // as to insert the new POI in the database
         $.ajax({
@@ -909,11 +960,11 @@ function setFilters() {
         var checked = filter.selected ? ' checked' : '';
 
         filters_html += "<input type='checkbox'" + checked + " name='map-filter' id='map-filter" + i + "' class='map-filter' value=\"" + filter.name + "\" />" +
-                "<label for='map-filter" + i + "'><img id='img_style' src='images/pin" + i%16 + ".png'/> " + filter.name + "</label>";
+                "<label for='map-filter" + i + "'><img id='img_style' src='images/pin" + i % 16 + ".png'/> " + filter.name + "</label>";
     }
 
     $('#map-filter > div > fieldset').html(filters_html);
-    $('#map-filter > div > fieldset > input').checkboxradio({mini: true});  
+    $('#map-filter > div > fieldset > input').checkboxradio({mini: true});
 }
 
 
@@ -1064,4 +1115,132 @@ function setSelectedFilters(selected) {
             filters[k].selected = false;
         }
     });
+}
+
+
+function Transit(lat, lon, type) {
+    this.lat = lat;
+    this.lon = lon;
+    this.type = type;
+}
+
+var currentTransit = new Transit("", "", "");
+var directionsService;
+var markerArray = [];
+var directionsDisplay;
+function initStartingPoint(transitType)
+{
+    $.mobile.loading("show", {
+        text: 'Loading your route',
+        textVisible: true
+    });
+    $("#popupMenu").popup("close");
+    infoBubble.close();
+    var startPoint;
+
+
+    /* Check if we can get geolocation from the browser */
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            $.mobile.loading("show", {
+                text: 'Loading your route',
+                textVisible: true
+            });
+
+            /* Load near me marker only once */
+            isNearMeMarkerLoaded = true;
+            var currentmarkerpos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+            var currentmarker = new google.maps.Marker({
+                position: currentmarkerpos,
+                map: map,
+                animation: google.maps.Animation.DROP
+            });
+            startPoint = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            // Route the directions and pass the response to a
+            // function to create markers for each step.
+            calcRoute(startPoint, transitType);
+        }, function(error) {
+        
+            startPoint = new google.maps.LatLng(mapLat, mapLon);
+            calcRoute(startPoint, transitType);
+        });
+    }
+
+    else
+    {
+        startPoint = new google.maps.LatLng(mapLat, mapLon);
+        calcRoute(startPoint, transitType);
+    }
+}
+
+function calcRoute(startPoint, transitType) {
+    endPoint = new google.maps.LatLng(currentTransit.lat, currentTransit.lon);
+
+    var request = {
+        origin: startPoint,
+        destination: endPoint,
+        travelMode: google.maps.TravelMode[transitType]
+    };
+    directionsService.route(request, function(response, status) {
+        
+        if (status == google.maps.DirectionsStatus.OK) {
+            //    var warnings = document.getElementById('warnings_panel');
+            //warnings.innerHTML = '<b>' + response.routes[0].warnings + '</b>';
+            //   console.log("Routes", response.routes);
+            directionsDisplay.setDirections(response);
+            showSteps(response);
+            $.mobile.loading("hide");
+        }
+        else{alert("Could not create route: " + status);}
+    });
+
+    // First, remove any existing markers from the map.
+    for (var i = 0; i < markerArray.length; i++) {
+        markerArray[i].setMap(null);
+    }
+    // Now, clear the array itself.
+    markerArray = [];
+}
+
+function showSteps(directionResult) {
+    // For each step, place a marker, and add the text to the marker's
+    // info window. Also attach the marker to an array so we
+    // can keep track of it and remove it when calculating new
+    // routes.
+    var myRoute = directionResult.routes[0].legs[0];
+
+    for (var i = 0; i < myRoute.steps.length; i++) {
+        var marker = new google.maps.Marker({
+            position: myRoute.steps[i].start_location,
+            map: map,
+            animation: google.maps.Animation.DROP
+        });
+        attachInstructionText(marker, myRoute.steps[i].instructions);
+        markerArray[i] = marker;
+    }
+}
+
+function attachInstructionText(marker, text) {
+    google.maps.event.addListener(marker, 'click', function() {
+        // Open an info window when the marker is clicked on,
+        // containing the text of the step.
+        stepDisplay.setContent(text);
+        stepDisplay.open(map, marker);
+        fixMapHeight();
+    });
+}
+
+/*see the selected sensor on the map*/
+function seeOnMap()
+{
+    $.mobile.changePage("#page1", {transition: "none"});
+    map.setZoom(16);
+    infoBubble.setContent(setInfoWindowPoi(currentPoi));
+    infoBubble.open(map, markersArray[currentPoi.id]);
+}
+
+function showTransitOptions()
+{
+    $("#popupMenu").popup("open");
 }
