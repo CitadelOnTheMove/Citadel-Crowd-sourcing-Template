@@ -102,7 +102,7 @@ header.ui-header, footer.ui-footer {
 .filter-footer {
     position:absolute !important;
     bottom:0;
-    height:40px;
+    height:53px;
     border:0;
 }
 .list-container {
@@ -147,14 +147,8 @@ header.ui-header, footer.ui-footer {
 #list form {
     background: #F8545B;
 }
-#list form input {
-    /*color:white;*/
-}
-#list ul li {
-    padding-top:.5%;
-    padding-bottom:.5%;
-    border-bottom: 1px solid #90B17E;
-}
+
+
 #list ul li.ui-btn-up-b {
     background: #F8545B;
     background-image: none !important;
@@ -731,3 +725,12 @@ header.ui-header, footer.ui-footer {
 .bubbleDownVoteWrapper {border: 1px solid #ccc; background-color:#fff; padding:5px; display:inline-block; border-radius:20px;}
 .bubbleDownVoteWrapper img{ width:20px; margin-right:3px;}
 .bubbleUpVoteWrapper img{ width:20px; margin-right:3px;}
+/* jquery mobile 1.4.2 fix*/
+.ui-icon-loading {
+    background: url("http://code.jquery.com/mobile/1.2.0/images/ajax-loader.gif") repeat scroll 0 0 / 2.875em 2.875em rgba(0, 0, 0, 0) !important;
+}
+.ui-page-theme-a .ui-btn.ui-btn-active, html .ui-bar-a .ui-btn.ui-btn-active, html .ui-body-a .ui-btn.ui-btn-active, html body .ui-group-theme-a .ui-btn.ui-btn-active, html head + body .ui-btn.ui-btn-a.ui-btn-active, .ui-page-theme-a .ui-checkbox-on:after, html .ui-bar-a .ui-checkbox-on:after, html .ui-body-a .ui-checkbox-on:after, html body .ui-group-theme-a .ui-checkbox-on:after, .ui-btn.ui-checkbox-on.ui-btn-a:after, .ui-page-theme-a .ui-flipswitch-active, html .ui-bar-a .ui-flipswitch-active, html .ui-body-a .ui-flipswitch-active, html body .ui-group-theme-a .ui-flipswitch-active, html body .ui-flipswitch.ui-bar-a.ui-flipswitch-active, .ui-page-theme-a .ui-slider-track .ui-btn-active, html .ui-bar-a .ui-slider-track .ui-btn-active, html .ui-body-a .ui-slider-track .ui-btn-active, html body .ui-group-theme-a .ui-slider-track .ui-btn-active, html body div.ui-slider-track.ui-body-a .ui-btn-active { background-color: #F8545B !important; border-color: #F8545B !important;}
+.ui-li-has-thumb img {left:20px !important;top:20px !important;}
+.ui-icon-filter:after {
+	background-image: url("images/filter.png");
+}

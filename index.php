@@ -12,9 +12,9 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
         <!--------------- CSS files ------------------->    
-        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />        
-        <link rel="stylesheet" href="css/crowd-sourcing.min.css" />
-        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile.structure-1.2.0.min.css" /> 
+<!--        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />        -->
+<!--        <link rel="stylesheet" href="css/crowd-sourcing.min.css" />-->
+<!--        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile.structure-1.2.0.min.css" /> -->
         <link rel="stylesheet" href="css/my.css" />
         <!--<link rel="stylesheet" href="css/validationForm.css" />-->
 
@@ -34,7 +34,9 @@
         <!-- jQuery Library --> 
         <script src="js/jquery-1.8.2.min.js"></script>
         <!-- jQuery Mobile Library -->
-        <script src="js/jquery.mobile-1.2.0.min.js"></script>  
+           <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.css" />
+        <script src="//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.js"></script>
+<!--        <script src="js/jquery.mobile-1.2.0.min.js"></script>  -->
         <!-- Page params Library: Used to pass query params to embedded/internal pages of jQuery Mobile -->    
         <script src="js/jqm.page.params.js"></script>
 
@@ -46,10 +48,24 @@
     <body>
         <!-- Home Page: Contains the Map -->
         <div data-role="page" id="page1" class="page">
-            <header data-role="header" data-posistion="fixed" data-id="constantNav" data-fullscreen="true">
+            
+            
+<div data-role="popup" id="popupMenu" data-theme="a">
+        <ul data-role="listview" data-inset="true" style="min-width:210px;">
+            <li data-role="list-divider">How do you want to get there?</li>
+<!--            <li><a href="#">View details</a></li>-->
+            <li><a  onclick="initStartingPoint('DRIVING')" ><img class="ui-li-icon" src='css/images/car-black.png' />Car</a></li>
+            <li><a  onclick="initStartingPoint('WALKING')" ><img  class="ui-li-icon"  src='css/images/walk2-black.png' />Walk</a></li>
+              <li><a  onclick="initStartingPoint('TRANSIT')"><img  class="ui-li-icon"  src='css/images/bus-black.png'  />Public transportation</a></li>
+<!--            <li><a href="#">Edit</a></li>
+            <li><a href="#">Disable</a></li>
+            <li><a href="#">Delete</a></li>-->
+        </ul>
+</div>
+            <header data-role="header"  data-id="constantNav" data-fullscreen="true">
                 <span class="ui-title">Crowd-sourced PoIs</span>
-                <a href="" id="filter" data-icon="gear" data-iconpos="notext" data-theme="a" title="Settings" class="ui-btn-left">&nbsp;</a>
-                <a href="#info" data-rel="dialog" data-icon="info" data-iconpos="notext" data-theme="b" title="Info" class="ui-btn-right">&nbsp;</a>
+                <a href="" id="filter" data-icon="filter" data-iconpos="notext" data-theme="a" title="Settings" class="ui-btn-left">&nbsp;</a>
+                <a href="#info" data-rel="dialog" data-icon="info" data-iconpos="notext" data-theme="a" title="Info" class="ui-btn-right">&nbsp;</a>
                 <div data-role="navbar" class="navbar">
                     <ul>
                         <li><a href="#" class="pois-nearme" data-theme="a">Near me</a></li>
@@ -74,7 +90,7 @@
                 <div id="map_canvas" class="map_canvas"></div>
             </div>
 
-            <footer data-role="footer" data-posistion="fixed" data-fullscreen="true">
+            <footer data-role="footer"  data-fullscreen="true">
                 <a href="" id="addPoi" data-icon="plus" data-theme="a" title="Add new POI" data-rel="plus" class="ui-btn-center">Add new POI</a>
             </footer>
 
@@ -83,7 +99,7 @@
         <!-- List Page: Contains a list with the results -->
         <div data-role="page" id="page2" class="page">
 
-            <header data-role="header" data-posistion="fixed" data-id="constantNav">
+            <header data-role="header" data-id="constantNav">
                 <span class="ui-title"> Crowd-sourced POIs </span>
                 <fieldset data-role="controlgroup" class="favourites-button">
                     <input type="checkbox" name="favourites" id="favourites" class="custom" />
@@ -102,7 +118,7 @@
             <div class="list-container">
                 <div class="list-scroll-container">
                     <div data-role="content" id="list" class="poi">
-                        <ul data-role='listview' data-filter='true' data-theme='b'>
+                        <ul data-role='listview' data-filter='true' data-theme='a'>
                             <!-- dynamically filled with data -->
                         </ul>
                     </div><!--list-->
@@ -112,7 +128,7 @@
 
         <!-- Details Page: Contains the details of a selected element -->
         <div data-role="page" id="page3" data-title="Event fullstory page title" class="page">
-            <header data-role="header" data-posistion="fixed" data-fullscreen="true">
+            <header data-role="header"  data-fullscreen="true">
                 <span class="ui-title"> Crowd-sourced POIs </span>
                 <a href="" data-icon="back" data-iconpos="notext" data-theme="a" title="Back" data-rel="back" class="ui-btn-right">&nbsp;</a>
                 <div data-role="navbar" class="navbar">
@@ -126,7 +142,9 @@
 
             <div class="list-container">
                 <div class="list-scroll-container">
-                    <div data-role="content" id="item">
+                    <div data-role="content" >
+                        <a onclick='seeOnMap(); return false;'  class="ui-btn ui-shadow ui-corner-all ui-icon-location ui-btn-icon-notext">See on map</a>
+                        <span id="item"></span>
                         <!-- dynamically filled with data -->
                     </div><!--item-->
                     <ul ><li><div class='votePanel'>
@@ -160,7 +178,7 @@
 
                 </div><!--list-container-->
 
-                <footer data-role="footer" data-posistion="fixed" data-fullscreen="true">
+                <footer data-role="footer"  data-fullscreen="true">
                     <a href="" id="addFav" data-icon="star" data-theme="a" title="Add to favourites" data-rel="star" class="ui-btn-center">Add to favourites</a>
                     <a href="" id="removeFav" data-icon="star" data-theme="a" title="Remove from favourites" data-rel="star" class="ui-btn-center">Remove from favourites</a>
                 </footer>
@@ -253,9 +271,17 @@
                 </div>
 
                 <footer data-role="footer" data-posistion="fixed" data-fullscreen="true" class="newPoiDialogFooter">
-                    <button id="submit" type="submit" data-icon="check" data-theme="a" title="Save" class="ui-btn-right">Save</button>
-                    <a href="" id="addNewPoiDelete" data-icon="delete" data-theme="a" title="Delete" class="ui-btn-left">Cancel</a>
-                </footer>
+                 
+                    <div class="ui-grid-a">
+    <div class="ui-block-a"> <a href="" id="addNewPoiDelete" data-icon="delete" data-theme="a" title="Delete" class="ui-btn">Cancel</a>
+             </div>
+    <div class="ui-block-b"><button id="submit" type="submit" data-icon="check" data-theme="a" title="Save" class="ui-btn">Save</button>
+                  </div>
+</div>
+                    
+                    
+                    
+                      </footer>
             </form>
         </div> 
 
