@@ -60,7 +60,7 @@ define("MAP_ZOOM", 13);
 
 // database
 define("DB_USERNAME", "root");
-define("DB_PASSWORD", "");
+define("DB_PASSWORD", "root");
 define("DB_HOSTNAME", "127.0.0.1");
 define("DB_PORT", "3306");
 define("DB_NAME", "citadel_crowd_voting");

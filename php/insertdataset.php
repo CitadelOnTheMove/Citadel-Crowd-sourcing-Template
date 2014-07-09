@@ -1,10 +1,10 @@
 <?php
 include_once '../Config.php';
-include_once CLASSES.'Response.class.php';
-include_once CLASSES.'PoisDataset.class.php';
-include_once CLASSES.'Util.class.php';
+include_once 'Response.class.php';
+include_once 'PoisDataset.class.php';
+include_once 'Util.class.php';
 
-include_once CLASSES.'Database.class.php';
+include_once 'Database.class.php';
 
 $handle = fopen(DATASET_FILE, "r");
 $json = fread($handle, filesize(DATASET_FILE));

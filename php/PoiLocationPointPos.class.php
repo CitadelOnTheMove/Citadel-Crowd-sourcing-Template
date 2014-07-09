@@ -1,6 +1,6 @@
 <?php
 
-include_once CLASSES.'GeoLocation.class.php';
+include_once 'GeoLocation.class.php';
 
  class PoiLocationPointPos {
  	

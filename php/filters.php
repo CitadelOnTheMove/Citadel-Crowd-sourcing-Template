@@ -1,10 +1,10 @@
 <?php
 include_once 'Config.php';
-include_once CLASSES.'Util.class.php';
-include_once CLASSES.'Filter.class.php';
-include_once CLASSES.'Database.class.php';
-include_once CLASSES.'Response.class.php';
-include_once CLASSES.'PoisDataset.class.php';
+include_once 'Util.class.php';
+include_once 'Filter.class.php';
+include_once 'Database.class.php';
+include_once 'Response.class.php';
+include_once 'PoisDataset.class.php';
 
 /**
  * echoes a javascript array with the filters of the active dataset (from Config.php)

@@ -1,7 +1,7 @@
 <?php
 
-include_once CLASSES . 'PoiLocation.class.php';
-include_once CLASSES . 'PoiLabel.class.php';
+include_once 'PoiLocation.class.php';
+include_once 'PoiLabel.class.php';
 
 /**
  * Describes a Poi element to be used by a Dataset.class

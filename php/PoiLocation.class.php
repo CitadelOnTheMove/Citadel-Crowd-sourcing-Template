@@ -1,7 +1,7 @@
 <?php
 
-include_once CLASSES.'PoiLocationPoint.class.php';
-include_once CLASSES.'PoiLocationAddress.class.php';
+include_once 'PoiLocationPoint.class.php';
+include_once 'PoiLocationAddress.class.php';
 
 /**
  * Describes the location object to be used in a @see Poi

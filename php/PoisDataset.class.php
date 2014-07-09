@@ -1,7 +1,7 @@
 <?php
 
-include_once CLASSES.'Dataset.class.php';
-include_once CLASSES.'Poi.class.php';
+include_once 'Dataset.class.php';
+include_once 'Poi.class.php';
 
 
 /**

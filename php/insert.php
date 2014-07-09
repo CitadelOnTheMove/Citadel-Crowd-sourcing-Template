@@ -1,10 +1,17 @@
 <?php
 
+/* Easier to use relative paths
 include_once '../Config.php';
 include_once CLASSES . 'Response.class.php';
 include_once CLASSES . 'Poi.class.php';
 include_once CLASSES . 'Util.class.php';
 include_once CLASSES . 'Database.class.php';
+*/
+include_once '../Config.php';
+include_once 'Response.class.php';
+include_once 'Poi.class.php';
+include_once 'Util.class.php';
+include_once 'Database.class.php';
 
 $poiTitle = $_POST['poiTitle'];
 $poiDesc = $_POST['poiDesc'];

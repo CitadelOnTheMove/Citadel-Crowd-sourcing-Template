@@ -1,7 +1,7 @@
 <?php
-include_once CLASSES.'Link.class.php';
-include_once CLASSES.'License.class.php';
-include_once CLASSES.'Author.class.php';
+include_once 'Link.class.php';
+include_once 'License.class.php';
+include_once 'Author.class.php';
 
 /**
  * Dataset class is tha base class that every dataset should extend
